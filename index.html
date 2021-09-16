@@ -37,4 +37,64 @@ Abhishikth Dweeti
       <td>$1.96</td></tr>
     </table>
     </hr>
+    <hr><h5>Minkowski sum of convex polygons</h5>
+    <blockquote><q>We propose a method to efficiently compute the Minkowski sum, denoted by binary operator ⊕ in the paper, of convex polytopes in Rd using their face lattice structures as input. In plane, the Minkowski sum of convex polygons can be computed in linear time of the total number of vertices of the polygons.<br> In Rd, we first show how to compute the Minkowski sum, P⊕Q, of two convex polytopes P and Q of input size n and m respectively in time O(nm). Then we generalize the method to compute the Minkowski sum of n convex polytopes, P1⊕P2⊕⋯⊕Pn, in Rd in time O(∏niNi), where P1, P2, …, Pn are n input convex polytopes and for each i, Ni is size of the face lattice structure of Pi. Our algorithm for Minkowski sum of two convex polytopes is optimal in the worst case since the output face lattice structure of P⊕Q for convex polytopes in Rd can be O(nm) in worst case.
+    </q></blockquote>
+    <a href=https://arxiv.org/abs/1811.05812 >Source link for definition </a><br>
+    
+    <pre>
+    ```
+    struct pt{
+        long long x, y;
+        pt operator + (const pt & p) const {
+            return pt{x + p.x, y + p.y};
+        }
+        pt operator - (const pt & p) const {
+            return pt{x - p.x, y - p.y};
+        }
+        long long cross(const pt & p) const {
+            return x * p.y - y * p.x;
+        }
+    };
+    
+    void reorder_polygon(vector<pt> & P){
+        size_t pos = 0;
+        for(size_t i = 1; i < P.size(); i++){
+            if(P[i].y < P[pos].y || (P[i].y == P[pos].y && P[i].x < P[pos].x))
+                pos = i;
+        }
+        rotate(P.begin(), P.begin() + pos, P.end());
+    }
+    
+    vector<pt> minkowski(vector<pt> P, vector<pt> Q){
+        // the first vertex must be the lowest
+        reorder_polygon(P);
+        reorder_polygon(Q);
+        // we must ensure cyclic indexing
+        P.push_back(P[0]);
+        P.push_back(P[1]);
+        Q.push_back(Q[0]);
+        Q.push_back(Q[1]);
+        // main part
+        vector<pt> result;
+        size_t i = 0, j = 0;
+        while(i < P.size() - 2 || j < Q.size() - 2){
+            result.push_back(P[i] + Q[j]);
+            auto cross = (P[i + 1] - P[i]).cross(Q[j + 1] - Q[j]);
+            if(cross >= 0)
+                ++i;
+            if(cross <= 0)
+                ++j;
+        }
+        return result;
+    }
+    ```
+    </pre>
+    
+    <br>
+    <a href=https://cp-algorithms.com/geometry/minkowski.html >Source link for code </a>
+    
+    
+    
+    </hr>
 </html>
